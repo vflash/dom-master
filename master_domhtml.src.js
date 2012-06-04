@@ -9,16 +9,20 @@
 	
 
 	function new_master(d, NS) {
-		var NS = NS || {
+		var NS = ns || {
 			'svg': 'http://www.w3.org/2000/svg',
 			'constructor': null
 		};
 
 		d = d ? d.ownerDocument || d : document;
 
-		master.NS = NS;
 		master.document = d;
-		master.clone = clone; 
+		master.NS = NS;
+
+		master.clone = function(doc) {
+			var c = new_master(doc||this.document, NS);
+			return c;
+		};
 
 		master.text = text;
 		master.map = map;
