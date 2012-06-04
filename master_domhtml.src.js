@@ -2,9 +2,11 @@
 	'use strict';
 
 	var module = new_master(document);
-	var u, badIE = '\v'=='v' && document.createElement('span').style.opacity === u; // badIE = IE<9
+	var u, badIE = '\v'=='v' && document.documentMode < 9; // badIE = IE<9
 	// по умолчанию все параметры вставляются через nn.setAttribute(x, v);
 	// за исключением приведенного списка и параметров начинаюшиеся с символа "_" пример {_xxxx: 333}
+
+	
 
 	function new_master(d, NS) {
 		var NS = NS || {
