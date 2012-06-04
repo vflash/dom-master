@@ -19,10 +19,7 @@
 		master.document = d;
 		master.NS = NS;
 
-		master.clone = function(doc) {
-			var c = new_master(doc||this.document, NS);
-			return c;
-		};
+		master.clone = clone;
 
 		master.text = text;
 		master.map = map;
