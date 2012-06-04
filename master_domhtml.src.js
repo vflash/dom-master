@@ -1,120 +1,83 @@
-﻿
-(function (rr) {
+﻿var master = new function() {
 	'use strict';
 
+	var module = new_master(document);
 	var u, badIE = '\v'=='v' && document.createElement('span').style.opacity === u; // badIE = IE<9
-
 	// по умолчанию все параметры вставляются через nn.setAttribute(x, v);
 	// за исключением приведенного списка и параметров начинаюшиеся с символа "_" пример {_xxxx: 333}
-	var attr_to_param = { constructor: null
-		, 'name': badIE ? null : 'name'
-		, 'type': badIE ? null : 'type'
-		, 'title': 'title'
-		, 'value': 'value'
-		, 'width': 'width'
-		, 'height': 'height'
-		, 'src': 'src'
-		, 'href': 'href'
-		, 'rel': 'rel'
-		, 'cellPadding': 'cellPadding'
-		, 'cellpadding': 'cellPadding'
-		, 'cellSpacing': 'cellSpacing'
-		, 'cellspacing': 'cellSpacing'
-		, 'colSpan': 'colSpan'
-		, 'colspan': 'colSpan'
-		, 'rowSpan': 'rowSpan'
-		, 'rowspan': 'rowSpan'
-		, 'border': 'border'
-		, 'content': 'content'
-		, 'bgColor': 'bgColor'
-		, 'bgcolor': 'bgColor'
-		, 'valign': 'vAlign'
-		, 'vAlign': 'vAlign'
-		, 'color': 'color'
-		, 'abbr': 'abbr'
-		, 'align': 'align'
-		, 'httpEquiv': 'httpEquiv'
-		, 'http-equiv': 'httpEquiv'
-		, 'tabIndex': 'tabIndex'
-		, 'tabindex': 'tabIndex'
-		, 'zIndex': 'zIndex'
-		, 'zindex': 'zIndex'
-	};
 
+	function new_master(d, NS) {
+		var NS = NS || {
+			'svg': 'http://www.w3.org/2000/svg',
+			'constructor': null
+		};
 
-	rr.new_master = function (d, ns) {
+		d = d ? d.ownerDocument || d : document;
+
+		master.NS = NS;
+		master.document = d;
+		master.clone = clone; 
+
+		master.text = text;
+		master.map = map;
+		master.html = html;
+		master.sconv = sconv; // эксперементальный функционал
+
+		return master;
 
 		function master(nn, q) {
-			if (nn === 'text') return d.createTextNode(q); // в ж. этот функционал . нужно использовать _.text("eeeeee")
+			//if (nn === 'text') return d.createTextNode(q); // в ж. этот функционал . нужно использовать _.text("eeeeee")
 			if (!nn) return;
 
-			var tag, a, u, l = arguments.length
-			, params = false
-			, arg_length = arguments.length
+			var u
 			, append_index = 1 // с какого аргумента наченаются потомки
+			, params = false
+			, nsnode = false
 			, is_group // флаг что это группа (nodeType < 0)
-			, i, x, id, css, pn, sx, v
+			, pn, i, x, id, css
 			;
 
-			if (q && !q.nodeType && typeof q == 'object') {
+			if (typeof q === 'object' && q !== null && !q.nodeType) {
 				if (q.length === u || !isArray(q)) {
-					params = q;
 					append_index = 2; // потомки с 3-го аргумента
-
-					/*
-					arguments[1] = q = params.add; // params.add - призрак прошлого. вырезаю из кода
-
-					if (q === u) {
-						append_index = 2;
-					};
-					*/
+					params = q;
 				};
-			};
-
+			}; 
 
 			// create element
 			switch (nn) {
-				case 'body':
-					nn = d.body;
+				case 'div': case 'li': case 'br': case 'span': case 'a': case 'td':
+					nn = d.createElement(nn);
 					break;
 
-				case 'DocumentFragment':
-					nn = d.createDocumentFragment();
-					params = false;
-					break;
+				case 'DocumentFragment': nn = d.createDocumentFragment(); params = false; break;
+				case 'body': nn = d.body; break;
 
-				case 'div': case 'li': case 'br': case 'span': case 'a': case 'td': case 'abbr':
-					nn = d.createElement(tag = nn);
-					break;
 
 				default:
-					i = typeof nn;
-					if (i !== 'string') {
-						if (i === 'function') {
+					if (typeof nn !== 'string') {
+						if (typeof nn === 'function') {
 							if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
 							nn = new nn(master, params, false);
-
 							i = nn.nodeType;
 							is_group = i < 0;
 							if (!is_group) params = false;
+
 						} else {
 							i = nn.nodeType;
 							is_group = i < 0;
 						};
-						
+
 						if (!i) return nn;
 						break;
-					} ;
+					};
 
-					
 					if (nn.indexOf(':') !== -1) {
 						i = nn.indexOf(':');
-						nn = create_group(nn.substring(0, i), nn.substring(++i), params || false, d, ns, master);
-						if (!nn || !(i=nn.nodeType)) return nn;
+						nsnode = NS[nn.substring(0, i)];
+						if (!nsnode) return null;
 
-						is_group = i < 0;
-						if (!is_group) params = false; // выставлять параметры нет нужды за это отвечает конструктор
-						break;
+						nn = nn.substring(++i);
 					};
 
 					// tag.className className#idNode
@@ -131,83 +94,26 @@
 						x = i;
 					};
 
-					if (x) {
-						nn = nn.substring(0, x);
-					};
+					if (x) nn = nn.substring(0, x);
 
-					nn = (tag = nn) !== 'body' ? d.createElement(nn) : d.body;
+
+					nn = nn === 'body' ? d.body 
+						: nsnode ? d.createElementNS(nsnode, nn) 
+							: d.createElement(nn)
+					;
 			};
 
-			
-			// set params
-			if (params) {
-				if (is_group) {
+			if (is_group) {
+				// params
+				if (params) {
 					// nn._set_parameters - дает право мастеру изменянять значения через функцию set({key: value, ...})
 					if (nn._set_parameters === true && typeof nn.set == 'function') {
 						nn.set(params);
 					};
-				} 
-				else {
-					for (x in params) {
-						v = params[x];
-
-						if (v === u || v === null) continue;
-
-						if (i = attr_to_param[x]) {
-							nn[i] = v;
-							continue;
-						};
-
-						switch (x) {
-							case 'text': 
-								if (v || v === '' || v === 0) {
-									nn.appendChild(d.createTextNode(v));
-								};
-								break;
-
-							case 'id':
-								if (v) id = v;
-								break;
-
-							case 'class': case 'css': //case 'className':
-								if (v) css = css ? css + ' ' + v : v;
-								break;
-
-							case 'style':
-								typeof v === 'string' ? nn.style.cssText = v : v && style_set(nn, v);
-								break;
-
-							case 'parent': case 'before': case 'after': //case 'add':
-								break;
-
-							case 'onclick': case 'onmousedown': case 'onmouseup': case 'onmousemove': case 'onchange': case 'onsubmit': case 'onresize': case 'onscroll':
-								if (typeof v === 'function') {
-									nn[x] = v;
-								} else {
-									nn.setAttribute(x, v);
-								};
-								break;
-
-							default:
-								if (x.indexOf('_') === 0) {
-									nn[x] = v; 
-								} else {
-									nn.setAttribute(x, v);
-								};
-						};
-					};
 				};
-			};
 
-			if (!is_group) { // params
-				if (css) nn.className = css;
-				if (id) nn.id = id;
-			};
-			
-
-			if (is_group) {
-				sx = typeof nn.appendChild === 'function';
-				if (!sx) {
+				// append
+				if (typeof nn.appendChild !== 'function') {
 					pn = nn.box || nn.node || false;
 					if (pn.nodeType > 0) {
 						append_nativ(d, pn, arguments, append_index);
@@ -215,135 +121,62 @@
 				} else {
 					append_other(d, nn, arguments, append_index);
 				};
-			} else {
-				append_nativ(d, nn, arguments, append_index);
+
+				return nn;
 			};
 
-			return params ? params.parent || params.after || params.before ? insert(nn, params, is_group) : nn : nn;
-		};
+			if (params) {
+				if (nsnode) {
+					set_attrNS(d, nn, params||false, css, id);
+				} else {
+					set_attr(d, nn, params, css, id);
+				};
 
-		d = d ? d.ownerDocument || d : document;
+			} else {
+				if (css) nsnode ? nn.setAttribute('class', css) : nn.className = css;
+				if (id) nn.id = id;
+			};
 
-		master.global = ns || (ns = {});
-		master.document = d;
+			append_nativ(d, nn, arguments
+				, append_index
+			);
 
-		master.text = text;
-		master.html = html;
-		master.map = map;
-		master.set = set;
-
-		master.clone = clone; // отказ от контекста делает ее почти ненужным. Позволяет сделать клон мастера для другого докумета.
-		master.tmpl = tmpl; // позволяет создать обьект "группы" с явным указанием параметра вторым ургументом. // нужно доработать идиологию
-
-		master.forEach = map; // для совместимости. будет удален
-
-		return master;
-	};
-
-
-	var isArray = Array.isArray || new function (o) {
-		var x = Object.prototype.toString, s = x.call([]);
-		return function (o) {
-			return x.call(o) === s
-		}
-	};
-
-
-	function text(x) {
-		return this.document.createTextNode(x || (x === 0 ? 0 : ''))
-	}
-
-	var N2A;
-	try {
-		N2A = Array.prototype.slice.call(document.documentElement.childNodes) instanceof Array
-	} catch (e) { }
-
-	function html(x) {
-		var n = this.nullNode || (this.nullNode = this.document.createElement('div')), a, i;
-		n.innerHTML = x;
-		n = n.childNodes;
-
-		if (i = n.length) {
-			if (N2A) return Array.prototype.slice.call(n);
-
-			for (a = []; i--; ) a[i] = n[i];
-			return a
-		}
-	}
-
-	function insert(nn, p, is_group) {
-		var x, a, ip, ib, pn, i;
-
-		if (is_group) {
-			if (x = p.parent) {
-				if (i = x.nodeType) {
-					if (i < 0 && x.appendChild) {
-						x.appendChild(nn)
-					}
-					else {
-						x = i < 0 ? x.box || x.node : x;
-						pn = nn.nodeType < 0 ? nn.node : nn
-						if (x && pn) x.appendChild(pn);
-					}
-				}
-			}
 			return nn;
-		}
-
-		// insert
-		if (a = p.after) {
-			ib = a.nextSibling;
-			if (!ib) ip = a.parentNode;
 		};
-
-		if (a = p.parent || ip)
-			return a.appendChild(nn);
-
-		if (a = p.before || ib)
-			return a.parentNode.insertBefore(nn, a);
-
-		return nn;
 	};
 
-	function append_nativ(d, pn, m, si) {
-		var i = si, l = m.length, a, x;
+
+
+
+
+	// ----------------------------------------------------------------------
+
+
+
+
+
+
+	function append_nativ(d, pn, m, i) {
+		var l = m.length, a;
 
 		while(i < l) {
 			a = m[i++];
-			
-			if (a) {
-				x = a.nodeType;
-				if (x > 0) {
-					//try {
-					pn.appendChild(a);
-					//} catch(e) {
-						//alert(pn === a)
-						//alert(e)
-						//alert(a)
-						
-					//}					
-					continue;
-				}
-				else if (x < 0) {
-					if (a = a.node) {
-						pn.appendChild(a);
-					};
-					continue
-				};
-			}
-			else if (a !== 0) {
-				continue;
-			};
-			
-			
-			switch (typeof a) {
-				case 'number': if (a !== a) break;
-				case 'string':
-					pn.appendChild(d.createTextNode(a));
-					break;
 
-				case 'object':
-					if (isArray(a)) append_nativ(d, pn, a, 0);
+			if (a === false || a == null || a !== a ) continue; 
+
+			if (typeof a === 'object') { 
+				if (a.nodeType > 0) {
+					pn.appendChild(a);
+
+				} else if (a.nodeType < 0) {
+					if (a = a.node) pn.appendChild(a);
+
+				} else if (isArray(a)) {
+					append_nativ(d, pn, a, 0);
+				};
+
+			} else {
+				pn.appendChild(d.createTextNode(a));
 			};
 		};
 	};
@@ -353,13 +186,12 @@
 		var i = si, l = m.length, a, x;
 		
 		while(i < l) {
-			a = m[i++];
-			if (a) {
+			if (a = m[i++]) {
 				if (a.nodeType) {
 					nn.appendChild(a);
 				};
-			} 
-			else if (a !== 0) {
+
+			} else if (a !== 0) {
 				continue;
 			};
 
@@ -377,37 +209,55 @@
 	};
 
 
-	// так как отказался от контекста этот функционал считаю устаревшим
-	function clone(doc) {
-		var c = rr.new_master(doc||this.document, this.global);
-		return c;
-	};
 
-	
-	/*
-	ui - name ui || ui element
-	pr - set parament
-	doc - document
-	ns - local name space
-	master - constructor element
-	*/
+	// set params
 
+	function set_attrNS(d, nn, params, css, id) {
+		if (!params) {
+			if (css) nn.setAttribute('class', css);
+			if (id) nn.id = id;
+			return;
+		};
 
-	function create_group(type, ui, p, d, gs, master) {
-		var ns = gs[type]||false, c, u;
+		var u, x, v;
+		for (x in params) {
+			v = params[x];
 
-		if (c = ns[ui]) {
-			if (typeof c === 'function') {
-				if (!c.prototype.nodeType) c.prototype.nodeType = -1;
-				ui = new c(master, p ); //, {name: ui, type: tp, document: d, uiclass: c}
-				return ui;
+			if (v == null) continue;
+
+			switch (x) {
+				case 'id': if (v) id = v; break;
+
+				case 'class': case 'css':
+					if (v) css = css ? css + ' ' + v : v;
+					break;
+
+				default:
+					if (x.charCodeAt(0) === 95) { // "_"
+						nn[x] = v;
+					} else {
+						nn.setAttribute(x, v);
+					};
 			};
 		};
+
+		if (css) nn.setAttribute('class', css);
+		if (id) nn.id = id;
 	};
 
-	// установка атрибутов у элемента. без ограничений
-	function set(nn, p) {
-		if (!nn || nn.nodeType !== 1) return; // 
+	var attr_to_param = { constructor: null
+		, 'name': badIE ? null : 'name'
+		, 'type': badIE ? null : 'type'
+		, 'value': typeof opera == 'object' ? null : 'value'
+		, 'title': 'title'
+		, 'src': 'src'
+		, 'href': 'href'
+		, 'tabindex': 'tabIndex'
+		, 'zindex': 'zIndex'
+	};
+
+
+	function set_attr(d, nn, params, css, id) {
 		var u, x, v, i;
 
 		for (x in params) {
@@ -415,25 +265,27 @@
 
 			if (v === u || v === null) continue;
 
+			if (x == 'css' || x === 'class') {
+				if (v) css = css ? css + ' ' + v : v;
+				continue;
+			};
+
 			if (i = attr_to_param[x]) {
 				nn[i] = v;
 				continue;
 			};
 
 			switch (x) {
-				case 'id':
-					nn.id = String(v);
+				case 'text': 
+					if (v || v === '' || v === 0) {
+						nn.appendChild(d.createTextNode(v));
+					};
 					break;
 
-				case 'class': case 'css':
-					nn.className = String(v);
-					break;
+				case 'id': if (v) id = v; break;
+				case 'style': nn.style.cssText = String(v); break;
 
-				case 'style':
-					if (i = nn.style) i.cssText = String(v);
-					break;
-
-				case 'onclick': case 'onmousedown': case 'onmouseup': case 'onmousemove': case 'onchange': case 'onsubmit': case 'onresize': case 'onscroll':
+				case 'onclick': case 'onmousedown': case 'onmouseup': case 'onmousemove': case 'onchange': case 'onsubmit': case 'onresize': case 'onscroll': case 'onselectstart':
 					if (typeof v === 'function') {
 						nn[x] = v;
 					} else {
@@ -442,40 +294,54 @@
 					break;
 
 				default:
-					if (x.indexOf('_') === 0) {
+					if (x.charCodeAt(0) === 95) { // "_"
 						nn[x] = v; 
 					} else {
 						nn.setAttribute(x, v);
 					};
 			};
 		};
+
+		if (css) nn.className = css;
+		if (id) nn.id = id;
+	};
+
+	var isArray = Array.isArray || new function (o) {
+		var x = Object.prototype.toString, s = x.call([]);
+		return function (o) {
+			return x.call(o) === s
+		}
+	};
+
+
+	function text(x) {
+		return this.document.createTextNode(x || (x === 0 ? 0 : ''))
+	}
+
+
+
+
+	var N2A;
+	try {N2A = Array.prototype.slice.call(document.documentElement.childNodes) instanceof Array} catch (e) { }
+
+	function html(x) {
+		var n = this.nullNode || (this.nullNode = this.document.createElement('div')), a, i;
+		n.innerHTML = x;
+		n = n.childNodes;
+
+		if (i = n.length) {
+			if (N2A) return Array.prototype.slice.call(n);
+
+			for (a = []; i--; ) a[i] = n[i];
+			return a
+		}
+	}
+
+	// чтоб создать мастера для другого документа
+	function clone(doc) {
+		return new_master(doc||this.document, this.NS);
 		
 	};
-
-	// эксперементальный функционал. 
-	function tmpl(nn, p) {
-		switch (typeof nn) {
-			case 'function':
-				if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-				return new nn(this, p);
-
-			case 'string': break;
-			default: return;
-		};
-
-		var x = nn.indexOf(':'), ns = this.global[nn.substring(0, x)], c;
-		if (!ns) return;
-
-		c = ns[nn.substring(x+1)];
-
-		if (typeof c === 'function') {
-			if (!c.prototype.nodeType) c.prototype.nodeType = -1;
-			if (nn = new c(this, p)) {
-				return nn;
-			};
-		};
-	};
-
 
 	function map(a, func) {
 		if (!a || typeof func !== 'function') {
@@ -517,32 +383,73 @@
 		return m;
 	};
 
-	// думаю оставить или нет. ну удаляю из за совместимости
-	function style_set(n, pr) {
-		var st = n.style, x, a, und;
 
-		x = pr.cssText;
-		if (x || x === '') st.cssText = x;
 
-		if (badIE) {
-			x = pr.opacity;
+	/*
+	_('div'
+		, _.tolist("Стоимость товара %0 руб. %1 коп."
+			, ns.rub = _.text('00')
+			, ns.kop = _.text('00')
+		)
+	)
+	*/
 
-			if (x || x === 0 || x === '') {
-				if (a = typeof n.filters !== 'object' ? null : n.filters['DXImageTransform.Microsoft.alpha'] || n.filters.alpha) {
-					if (a.enabled = x !== '') a.opacity = Math.round(x * 100);
-				}
-				else if (x !== '') {
-					st.filter += 'alpha(opacity=' + Math.round(x * 100) + ')';
+	function sconv(s) {
+		var u
+		, arg_length = arguments.length
+		, sbuff = ''
+		, xa = []
+		, pp = 0
+		, key, i, j, z
+		;
+		
+		for(i = s.indexOf('%'); i !== -1; i = s.indexOf('%', i)) {
+			z = i++;
+			j = s.charCodeAt(i);
+			if (j !== j) {
+				break;
+			};
+
+			if (j === 37) { // %
+				sbuff += s.substring(pp, i++);
+				pp = i;
+				continue;
+			} 
+			else if (j < 48 && j > 57) {
+				continue;
+			};
+
+			key = j - 48;
+
+			j = s.charCodeAt(++i);
+			while(j > 47 && j < 58) {
+				key = key * 10 + (j - 48);
+				j = s.charCodeAt(++i);
+			};
+
+			if (j === 37) i += 1;
+
+			++key;
+			if (key < arg_length && arguments[key] !== u) {
+				if(sbuff || z > pp) {
+					xa.push(sbuff + s.substring(pp, z));
+					sbuff = '';
 				};
+
+				xa.push(arguments[key]);
+				arguments[key] = u;
+
+				pp = i;
 			};
 		};
 
-		for (x in pr) {
-			if (x !== 'cssText') {
-				st[x] = pr[x];
-			};
+		if (pp < s.length) {
+			xa.push( sbuff + s.substr(pp) );
 		};
+		
+		return xa;
 	};
 
-})(this.rr);
+	return module;
+};
 
