@@ -359,16 +359,15 @@
 		, i = 1
 		, iend = l - 1
 		, m = []
-		, e = {first: true, last: l === 1, list: a, index: 0} //, master: this
+		, e = {first: true, last: l === 1, list: a, index: 0, push: push} //, master: this
 		, v, u
 		;
 
+		function push(v) {m.push(v)};
 
 		if (0 < l) {
 			v = func(a[0], e, this);
-			if (v || v === 0 || v === '') {
-				m.push(v)
-			};
+			if (v !== u) m.push(v)
 
 			e.first = false;
 		};
