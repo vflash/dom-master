@@ -359,7 +359,7 @@
 		, i = 1
 		, iend = l - 1
 		, m = []
-		, e = {first: true, last: false, list: a, index: 0} //, master: this
+		, e = {first: true, last: l === 1, list: a, index: 0} //, master: this
 		, v, u
 		;
 
