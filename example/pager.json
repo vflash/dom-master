@@ -11,6 +11,6 @@
 	],
 
 	"styles": [
-		"pager.css"
+		"pager.tmpl.css"
 	]
 }
