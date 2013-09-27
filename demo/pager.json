@@ -1,0 +1,16 @@
+{
+	"modules": {
+		"master": "githum:~/master",
+		"elems": "global:elems",
+		"tmpl": "global:tmpl"
+	},
+
+	"script": [
+		"pager.tmpl.js", 
+		"pager.js"
+	],
+
+	"styles": [
+		"pager.css"
+	]
+}

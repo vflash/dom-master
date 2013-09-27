@@ -1,0 +1,12 @@
+{
+	"modules": {
+		"_pager": "./pager.json",
+
+		"master": "githum:~/master",
+		"elems": "global:elems"
+	},
+
+	"script": [
+		"demo.js"
+	]
+}

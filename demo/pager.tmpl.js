@@ -1,5 +1,5 @@
 ﻿
-tmpl.mailbox_pager = function(_, pr) {
+tmpl.pager = function(_, pr) {
 
 	this.node = _('div.b-pager', {css: pr.css}
 		, _((pr.next_page ? 'a' : 'span')
