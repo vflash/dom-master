@@ -2,7 +2,7 @@
 	"modules": {
 		"_pager": "./pager.json",
 
-		"master": "githum:~/master",
+		"master": "github:~/master",
 		"elems": "global:elems"
 	},
 

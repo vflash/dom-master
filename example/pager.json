@@ -1,6 +1,6 @@
 {
 	"modules": {
-		"master": "githum:~/master",
+		"master": "github:~/master",
 		"elems": "global:elems",
 		"tmpl": "global:tmpl"
 	},
