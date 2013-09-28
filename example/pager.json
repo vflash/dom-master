@@ -5,12 +5,12 @@
 		"tmpl": "global:tmpl"
 	},
 
-	"script": [
-		"pager.tmpl.js", 
-		"pager.js"
+	"scripts": [
+		"./pager.tmpl.js", 
+		"./pager.js"
 	],
 
 	"styles": [
-		"pager.tmpl.css"
+		"./pager.tmpl.css"
 	]
 }

@@ -6,7 +6,7 @@
 		"elems": "global:elems"
 	},
 
-	"script": [
+	"scripts": [
 		"demo.js"
 	]
 }
