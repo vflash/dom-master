@@ -1,6 +1,6 @@
 {
 	"modules": {
-		"master": "github:~/master",
+		"master": "github:~/vflash/master",
 		"elems": "global:elems",
 		"tmpl": "global:tmpl"
 	},
