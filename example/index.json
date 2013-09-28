@@ -7,6 +7,6 @@
 	},
 
 	"scripts": [
-		"demo.js"
+		"./index.js"
 	]
 }

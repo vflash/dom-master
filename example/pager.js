@@ -71,7 +71,7 @@ elems.pager = new function() {
 			pages = pages.concat([{num: 1+num+((max-num)>>1), is_skip: true}, {num: max-1}, {num: max}])
 		};
 
-		var nn = new tmpl.mailbox_pager(ui.master, {
+		var nn = new tmpl.pager(ui.master, {
 			css: ui.css,
 			url_mask: ui.url_mask, //'#/page/'
 
