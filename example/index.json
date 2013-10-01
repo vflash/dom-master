@@ -2,7 +2,7 @@
 	"modules": {
 		"_pager": "./pager.json",
 
-		"master": "github:~/vflash/master",
+		"master": "github:~/vflash/dom-master",
 		"elems": "global:elems"
 	},
 
