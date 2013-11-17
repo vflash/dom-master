@@ -115,9 +115,12 @@ function new_master(d, NS) {
 				};
 			};
 
+			
+
 			// append
 			if (typeof nn.appendChild !== 'function') {
-				pn = nn.box || nn.node || false;
+				pn = nn; while(pn.nodeType < 0) pn = pn.box || pn.node || false;
+				//pn = nn.box || nn.node || false;
 				if (pn.nodeType > 0) {
 					append_nativ(d, pn, arguments, append_index);
 				};
@@ -150,8 +153,6 @@ function new_master(d, NS) {
 
 
 
-
-
 // ----------------------------------------------------------------------
 
 
@@ -173,6 +174,8 @@ function append_nativ(d, pn, m, i) {
 
 			} else if (a.nodeType < 0) {
 				if (a = a.node) {
+					while(a.nodeType < 0) a = a.node || false;
+
 					if (a.nodeType > 0) {
 						pn.appendChild(a);
 
