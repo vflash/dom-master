@@ -21,6 +21,7 @@ dom-master
 
 	//## создаение элемента через вызов конструктора
 	// cmps.elementBlock = function(master, options) {... код ...}
+	var node = _(cmps.elementBlock);	// анологично new cmps.elementBlock(domMaster, false)
 	var node = _(cmps.elementBlock, options);	// анологично new cmps.elementBlock(domMaster, options)
 
 
