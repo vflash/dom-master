@@ -1,3 +1,4 @@
 ﻿{
-	"scripts": ["dom-master.js"]
+	"scripts": ["dom-master.js"],
+	"alias": "domMaster"
 }
