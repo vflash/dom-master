@@ -40,3 +40,57 @@ dom-master
 
 
 ```
+
+###Свои компоненты:###
+
+Кроме html элементов div, span, ol, li ,table, ...  можно оперировать и компонентами. <br>
+Компонент это js-обьект с обязательным своством **nodeType** меньше нуля **{nodeType: -1, ...}**. <br>
+У компонента есть не обязательные свойства **node** и **box**, {nodeTYpe: -1, node: elementRoot, box: elementBox} .<br>
+Если требуется возможность вставлять html-древо компонета в другое дерево то у компонета должно быть свойство **node**.<br>
+Если требуется вставлять HTML в этот компонет, то должно быть свойство **box**. Если своства **box** нет то его роль выполняет свойство **node** .
+
+```js
+// пример компонента cmps.block
+cmps.block = function(_, options) {
+	this.nodeType = -1;
+
+	this.node = _('div.block-root'
+		, _('h4.block-head'
+			, _.text(options.title)
+		)
+		, this.node = _('div.block-box')
+	);
+}
+
+function create() {
+	var _ = domMaster;
+	
+	var x = _('section'
+		, _(cmps.block, {title: "Example text"}
+			, _('p'
+				, "Text Text Text"
+			)
+		)
+	);
+	
+	console.log(x.outerHTML); 
+	/* 
+		<section>
+			<div class="block-root">
+				<h4 class="block-head">Example text</h4>
+				<div class="block-box">
+					</p>Text Text Text</p>
+				</div>
+			</div>
+		</section>
+	*/
+
+};
+
+```
+
+
+
+
+
+
