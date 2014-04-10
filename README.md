@@ -12,7 +12,7 @@ dom-master
 
 ###Коротко о главном:###
 
-```
+```js
 	//
 	var _ = domMaster;
 
