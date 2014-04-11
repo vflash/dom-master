@@ -57,7 +57,7 @@ cmps.block = function(_, options) {
 		, _('h4.block-head'
 			, _.text(options.title)
 		)
-		, this.node = _('div.block-box')
+		, this.box = _('div.block-box')
 	);
 }
 
@@ -78,7 +78,7 @@ function create() {
 		<div class="block-root">
 			<h4 class="block-head">Example text</h4>
 			<div class="block-box">
-				</p>Text Text Text</p>
+				<p>Text Text Text</p>
 			</div>
 		</div>
 	</section>
@@ -88,6 +88,53 @@ function create() {
 
 ```
 
+Если у компонента есть метод **x.appendChild(elem)**  то domMaster игнорирует **x.box** и вставляет элементы в компонент через эту функцию.
+
+```js
+// пример использования метода appendChild компоненте
+cmps.block = function(_, options) {
+	this.nodeType = -1;
+
+	this.appendChild = function(n) {
+		if (!n || n.nodeName !== 'P') return;
+		this.box.appendChild(n)
+	};
+
+	this.node = _('div.block-root'
+		, _('h4.block-head'
+			, _.text(options.title)
+		)
+		, this.box = _('div.block-box')
+	);
+}
+
+function create() {
+	var _ = domMaster;
+	
+	var x = _('section'
+		, _(cmps.block, {title: "Example text"}
+			, _('p', "Text1 Text1 Text1")
+			, _('i', "Text2 Text2 Text2")
+			, _('p', "Text3 Text3 Text3")
+		)
+	);
+	
+	console.log(x.outerHTML); 
+	/* 
+	<section>
+		<div class="block-root">
+			<h4 class="block-head">Example text</h4>
+			<div class="block-box">
+				<p>Text1 Text1 Text1</p>
+				<p>Text3 Text3 Text3</p>
+			</div>
+		</div>
+	</section>
+	*/
+
+};
+
+```
 
 
 
