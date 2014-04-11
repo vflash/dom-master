@@ -137,6 +137,37 @@ function create() {
 ```
 
 
+###Дополнение:###
 
+У функции domMaster есть дополнительные методы, для упрошения некоторых действий
+
+```js
+	var _ = domMaster;
+
+
+	// метод _.text(string)
+	var x = _.text("Text Text Text"); // создает текстовый элемент
+	
+	
+	// метод _.html(stringHTML)
+	_('div'
+		, _.html('<p>Text1 Text2</p><p>Text1 Text2</p>') // создает список(Array) элементов заданного HTML
+	);
+	
+	
+	// метод _.map(array, function)
+	_('div'
+		, _.map([1,2,3,4,5], function(v) {  // создает список(Array) по аналогии с Array.map(...)
+			return _('button', _.text(v) );
+		})
+		
+		, _.map(7, function(v, x) {  // создаст массив из 7 элементов button
+			return _('button', _.text(x.index) );
+		})
+		
+	);
+
+
+```
 
 
