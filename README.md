@@ -74,14 +74,14 @@ function create() {
 	
 	console.log(x.outerHTML); 
 	/* 
-		<section>
-			<div class="block-root">
-				<h4 class="block-head">Example text</h4>
-				<div class="block-box">
-					</p>Text Text Text</p>
-				</div>
+	<section>
+		<div class="block-root">
+			<h4 class="block-head">Example text</h4>
+			<div class="block-box">
+				</p>Text Text Text</p>
 			</div>
-		</section>
+		</div>
+	</section>
 	*/
 
 };
