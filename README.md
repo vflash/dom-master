@@ -10,32 +10,32 @@ dom-master
 ###Коротко о главном:###
 
 ```js
-	//
-	var _ = domMaster;
+//
+var _ = domMaster;
 
-	//## создаение html элемента
-	var node = _('div'); // аналог document.createElement('div')
-	var node = _('div.css_className');  // с указанием атрибута [class]
-	var node = _('div.css_className#id_element');	// с указанием атрибута [id]
-	var node = _('div.css_className#id_element', {title: "title text", style: 'color: #000;', ...});	// с указанием других атрибутов
+//## создаение html элемента
+var node = _('div'); // аналог document.createElement('div')
+var node = _('div.css_className');  // с указанием атрибута [class]
+var node = _('div.css_className#id_element');	// с указанием атрибута [id]
+var node = _('div.css_className#id_element', {title: "title text", style: 'color: #000;', ...});	// с указанием других атрибутов
 
-	//## создаение элемента через вызов конструктора
-	// cmps.elementBlock = function(master, options) {... код ...}
-	var node = _(cmps.elementBlock);	// анологично new cmps.elementBlock(domMaster, false)
-	var node = _(cmps.elementBlock, options);	// анологично new cmps.elementBlock(domMaster, options)
+//## создаение элемента через вызов конструктора
+// cmps.elementBlock = function(master, options) {... код ...}
+var node = _(cmps.elementBlock);	// анологично new cmps.elementBlock(domMaster, false)
+var node = _(cmps.elementBlock, options);	// анологично new cmps.elementBlock(domMaster, options)
 
 
-	//## наполнение элемента другими элементами
-	var node = _('div.css_classname#id_element' // создаваемый элемент node
-		, _('hr') // созданный <hr> будет добавлен по аналогии -- node.appendchild( document.createElement('hr') )
-		, "text text text"  // текстовый аргумент будет добавлен как текстовый элемент -- node.appendchild( document.createtextnode("text text text") )
-		, 123456789 // по анологи с текстом будет создан текстовый элемент -- node.appendchild( document.createtextnode(123456789) )
-		, false // true|false|null|undefined|function - будут проигнорированы
+//## наполнение элемента другими элементами
+var node = _('div.css_classname#id_element' // создаваемый элемент node
+	, _('hr') // созданный <hr> будет добавлен по аналогии -- node.appendchild( document.createElement('hr') )
+	, "text text text"  // текстовый аргумент будет добавлен как текстовый элемент -- node.appendchild( document.createtextnode("text text text") )
+	, 123456789 // по анологи с текстом будет создан текстовый элемент -- node.appendchild( document.createtextnode(123456789) )
+	, false // true|false|null|undefined|function - будут проигнорированы
 
-		, [_('hr'), _('hr'), "text", [.., ...], ...] // все элементы массива будут добавленны в node. 
+	, [_('hr'), _('hr'), "text", [.., ...], ...] // все элементы массива будут добавленны в node. 
 
-		, _('span.text', "text")
-	);
+	, _('span.text', "text")
+);
 
 
 ```
@@ -142,30 +142,30 @@ function create() {
 У функции domMaster есть дополнительные методы, для упрошения некоторых действий
 
 ```js
-	var _ = domMaster;
+var _ = domMaster;
 
 
-	// метод _.text(string)
-	var x = _.text("Text Text Text"); // создает текстовый элемент
+// метод _.text(string)
+var x = _.text("Text Text Text"); // создает текстовый элемент
+
+
+// метод _.html(stringHTML)
+_('div'
+	, _.html('<p>Text1 Text2</p><p>Text1 Text2</p>') // создает список(Array) элементов заданного HTML
+);
+
+
+// метод _.map(array, function)
+_('div'
+	, _.map([1,2,3,4,5], function(v) {  // создает список(Array) по аналогии с Array.map(...)
+		return _('button', _.text(v) );
+	})
 	
+	, _.map(7, function(v, x) {  // создаст массив из 7 элементов button
+		return _('button', _.text(x.index) );
+	})
 	
-	// метод _.html(stringHTML)
-	_('div'
-		, _.html('<p>Text1 Text2</p><p>Text1 Text2</p>') // создает список(Array) элементов заданного HTML
-	);
-	
-	
-	// метод _.map(array, function)
-	_('div'
-		, _.map([1,2,3,4,5], function(v) {  // создает список(Array) по аналогии с Array.map(...)
-			return _('button', _.text(v) );
-		})
-		
-		, _.map(7, function(v, x) {  // создаст массив из 7 элементов button
-			return _('button', _.text(x.index) );
-		})
-		
-	);
+);
 
 
 ```
