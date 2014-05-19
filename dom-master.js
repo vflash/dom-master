@@ -102,9 +102,9 @@ var domMaster;
 					if (x) nn = nn.substring(0, x);
 
 					nn = nn === 'body' ? d.body 
-						: nsnode ? d.createElementNS(nsnode, nn) 
+						: nsnode ? d.createElementNS(nsnode, nn||'div') 
 							: nn === 'button' && badIE ? d.createElement('<button type="'+(params.type||'button')+'">')
-								: d.createElement(nn)
+								: d.createElement(nn||'div')
 					;
 			};
 
