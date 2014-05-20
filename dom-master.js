@@ -331,10 +331,18 @@ var domMaster;
 	};
 
 
-	function text(x) {
-		return this.document.createTextNode(x || (x === 0 ? 0 : ''))
-	}
+	function text(v, fn) {
+		return typeof fn === 'function' ? textFunc(this.document, v, fn)
+			: this.document.createTextNode(v || (v === 0 ? 0 : ''))
+		;
+	};
 
+	function textFunc(d, v, fn) {
+		var n = d.createTextNode('');
+		(n.set = function() {n.data = fn.apply(n, arguments)})(v);
+
+		return n;
+	};
 
 	function clone(doc) {
 		return new_master(doc||this.document, this.NS);
